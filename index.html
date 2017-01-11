@@ -20,8 +20,25 @@
             <div class="lesson">
                 <div class="title">Lesson 1</div>
                 <div class="description">
+                    <div ng-app="MyApp" ng-init="syncVal='Test_2'">
+                        <span ng-bind="syncVal"></span>
+                        <div ng-controller="MyCtrl">
+                            <input type="text" ng-model="syncVal">
+                            <span ng-bind="syncVal"></span>
+                        </div>
+                        <div ng-controller="MyCtrl">
+                            <input type="text" ng-model="syncVal">
+                            <span ng-bind="syncVal"></span>
+                        </div>
+                    </div>
                  </div>   
             </div>
+             <script>
+            var app = angular.module('MyApp', []);
+                app.controller('MyCtrl', function($scope) {
+                    $scope.syncVal = $scope.syncVal;
+                });
+            </script>
             <div class="lesson">
                 <div class="title">Lesson 2</div>
                 <div class="description">
