@@ -1,2 +1,2 @@
 # AngularJS
-Course of AngularJS 1.*
+## Course of AngularJS 1.*
