@@ -1,6 +1,6 @@
 /* Base Style */ 
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 html{
     box-sizing: border-box;
@@ -33,7 +33,7 @@ header{
     line-height: 70px;
     width: 500px;
     float: left;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 600;
 }
 
@@ -50,11 +50,37 @@ header{
 }
 .lesson .title{
     font-size: 18px;
-    padding: 5px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
     border-left: 3px solid #e55053;
 }
 .lesson .description{
-    font-family: 'Open Sans', sans-serif;
     padding: 0 10px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.exercise {
+    padding: 5px 20px;
+    background-color: #f4f4f4;
+    font-weight: 400;
+}
+
+.exercise .summary{
+    font-size: 16px;
+}
+
+.exercise .items{
+    font-size: 14px;
+}
+
+
+.exercise .items li{
+    padding: 5px;
+}
+.task-code{
+    padding: 20px;
+    background-color: #c3c3c3;
+}
+.task-code .node-line{
+    padding: 10px;
 }

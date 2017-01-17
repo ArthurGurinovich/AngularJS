@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="./img/favicon.ico" type="image/x-icon">
         <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon">
-        <script src="https://code.angularjs.org/1.5.0/angular.min.js"></script>
+        <script src="./js/base/angular.min.1.5.js"></script>
         <link rel="stylesheet" type="text/css" href="./css/style.css">
     </head>
     <body>
@@ -20,12 +20,104 @@
             <div class="lesson">
                 <div class="title">Lesson 1</div>
                 <div class="description">
+                    <div class="exercise">
+                        <div class="summary"><b>Task:</b> To display the inheritance of scopes in angularjs applications do the following:</div>
+                        <ul class="items">
+                            <li>
+                                a. with ng-init create a shared value in root scope
+                            </li>
+                            <li>
+                                b. create parentCtrl1 and parentCtrl2 on the same level under root scope
+                            </li>
+                            <li>
+                                c. in the scope level of parentCtrl1 and parentCtrl2 place inputs with ng-model bound to shared value
+                            </li>
+                            <li>
+                                d. near each input place output of shared value with {{}} expression
+                            </li>
+                            <li>
+                                e. create ChildCtrl1 and ChildCtrl2 under parentCtrl1 scope
+                            </li>
+                            <li>
+                                f. in the scope level of ChildCtrl1 and ChildCtrl2 place inputs with ng-model bound to shared value
+                            </li>
+                            <li>
+                                g. near each inputs place outputs of shared value with {{}} expression
+                            </li>
+                            <li>
+                                h. improve the application so that all the {{}} show the same values after different scenarios of typing in valuse into different inputs.
+                            </li>
+                        </ul>
+                        
+                    </div>
+                    <!-- Start AngularJS App -->
+                    <div class="task-code" ng-app="MyApp" ng-init="statusVal.syncVal='Wait Sync'">
+                        <span>Level: rootScope value:</span>
+                        <span>{{ statusVal.syncVal }}</span>
+
+                        <!-- Parent Ctrl -->
+                        <div class="node-line" ng-controller="ParentCtrl1" >
+                            <span>Level parentCtrl1:</span>
+                            <input type="text" ng-model="statusVal.syncVal">
+                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+
+                            <!-- Child Ctrl -->
+                            <div class="node-line" ng-controller="ChildCtrl1" >
+                                <span>Level ChildCtrl1:</span>
+                                <input type="text" ng-model="statusVal.syncVal">
+                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+                            </div>
+
+                            <!-- Child Ctrl -->
+                            <div class="node-line" ng-controller="ChildCtrl2" ">
+                                <span>Level ChildCtrl2:</span>
+                                <input type="text" ng-model="statusVal.syncVal">
+                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+                            </div>
+                        </div>
+                        <!-- Parent Ctrl -->
+                        <div class="node-line" ng-controller="ParentCtrl2">
+                            <span>Level parentCtrl2:</span>
+                            <input type="text" ng-model="statusVal.syncVal">
+                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+                        </div>
+                    </div>
+                    <!-- End AngularJS App -->
+
+                    <!-- Start AngularJS App Script -->
+                    <!-- V1 Using Events -->
+                    
+                    <script>
+                        var app = angular.module('MyApp', []);
+                        app.run(['$rootScope', function($rootScope){
+                            $rootScope.statusVal = function() {
+                                return { syncVal: 'Wait Sync' };
+                            };
+                            console.log($rootScope.statusVal);
+                        }]);
+                        app.controller('ParentCtrl1', function($scope){
+                            $scope.syncVal = $scope.statusVal.syncVal;
+                        });
+                        app.controller('ChildCtrl1', function($scope){
+                            $scope.syncVal = $scope.statusVal.syncVal;
+                        });
+                        app.controller('ChildCtrl2', function($scope){
+                            $scope.syncVal = $scope.statusVal.syncVal;
+                        });
+                        app.controller('ParentCtrl2', function($scope){
+                            $scope.syncVal = $scope.statusVal.syncVal;
+                        });
+
+                    </script>
+                    <!-- End AngularJS App Script -->
                  </div>   
             </div>
+       
             <div class="lesson">
                 <div class="title">Lesson 2</div>
                 <div class="description">
                 </div>   
             </div>
+     </div>       
     </body>
 </html>
