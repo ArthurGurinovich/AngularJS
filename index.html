@@ -90,22 +90,19 @@
                     <script>
                         var app = angular.module('MyApp', []);
                         app.run(['$rootScope', function($rootScope){
-                            $rootScope.statusVal = function() {
-                                return { syncVal: 'Wait Sync' };
-                            };
-                            console.log($rootScope.statusVal);
+                            $rootScope.statusVal = { syncVal: 'Wait Sync' };
                         }]);
                         app.controller('ParentCtrl1', function($scope){
-                            $scope.syncVal = $scope.statusVal.syncVal;
+                            // $scope.syncVal = $scope.statusVal.syncVal;
                         });
                         app.controller('ChildCtrl1', function($scope){
-                            $scope.syncVal = $scope.statusVal.syncVal;
+                            // $scope.syncVal = $scope.statusVal.syncVal;
                         });
                         app.controller('ChildCtrl2', function($scope){
-                            $scope.syncVal = $scope.statusVal.syncVal;
+                            // $scope.syncVal = $scope.statusVal.syncVal;
                         });
                         app.controller('ParentCtrl2', function($scope){
-                            $scope.syncVal = $scope.statusVal.syncVal;
+                            // $scope.syncVal = $scope.statusVal.syncVal;
                         });
 
                     </script>
