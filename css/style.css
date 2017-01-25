@@ -84,3 +84,52 @@ header{
 .task-code .node-line{
     padding: 10px;
 }
+
+
+/* Модальное окно №1 */
+/*Оформление*/
+.modalDialog {
+ position: fixed;
+ font-family: Arial, Helvetica, sans-serif;
+ top: 0;
+ right: 0;
+ bottom: 0;
+ left: 0;
+ background: rgba(0,0,0,0.8);
+ z-index: 99;
+ -webkit-transition: opacity 400ms ease-in;
+ -moz-transition: opacity 400ms ease-in;
+ transition: opacity 400ms ease-in;
+ display: none;
+}
+/*Открытие*/
+.modalDialog:target {
+ display: block;
+ pointer-events: auto;
+}
+ 
+.modalDialog > div {
+    width: 500px;
+    position: relative;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 3px;
+    background: #fff;
+    border: 1px solid #d2d2d2;
+}
+/*Закрытие окна*/
+.close {
+    background: #606061;
+    color: #FFFFFF;
+    line-height: 25px;
+    position: absolute;
+    right: -1px;
+    text-align: center;
+    top: -1px;
+    width: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    /* -webkit-border-radius: 12px; */
+    -moz-border-radius: 12px;
+    border-radius: 3px;
+}

@@ -16,105 +16,64 @@
             </div>
             <div class="title">AngularJS | Training</div>
         </header>
-        <div id="content">
-            <div class="lesson">
-                <div class="title">Lesson 1</div>
-                <div class="description">
-                    <div class="exercise">
-                        <div class="summary"><b>Task:</b> To display the inheritance of scopes in angularjs applications do the following:</div>
-                        <ul class="items">
-                            <li>
-                                a. with ng-init create a shared value in root scope
-                            </li>
-                            <li>
-                                b. create parentCtrl1 and parentCtrl2 on the same level under root scope
-                            </li>
-                            <li>
-                                c. in the scope level of parentCtrl1 and parentCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                d. near each input place output of shared value with {{}} expression
-                            </li>
-                            <li>
-                                e. create ChildCtrl1 and ChildCtrl2 under parentCtrl1 scope
-                            </li>
-                            <li>
-                                f. in the scope level of ChildCtrl1 and ChildCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                g. near each inputs place outputs of shared value with {{}} expression
-                            </li>
-                            <li>
-                                h. improve the application so that all the {{}} show the same values after different scenarios of typing in valuse into different inputs.
-                            </li>
-                        </ul>
-                        
-                    </div>
-                    <!-- Start AngularJS App -->
-                    <div class="task-code" ng-app="MyApp" ng-init="statusVal.syncVal='Wait Sync'">
-                        <span>Level: rootScope value:</span>
-                        <span>{{ statusVal.syncVal }}</span>
-
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl1" >
-                            <span>Level parentCtrl1:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl1" >
-                                <span>Level ChildCtrl1:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                            </div>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl2" ">
-                                <span>Level ChildCtrl2:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                            </div>
-                        </div>
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl2">
-                            <span>Level parentCtrl2:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                        </div>
-                    </div>
-                    <!-- End AngularJS App -->
-
-                    <!-- Start AngularJS App Script -->
-                    <!-- V1 Using Events -->
-                    
-                    <script>
-                        var app = angular.module('MyApp', []);
-                        app.run(['$rootScope', function($rootScope){
-                            $rootScope.statusVal = { syncVal: 'Wait Sync' };
-                        }]);
-                        app.controller('ParentCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ChildCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ChildCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ParentCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-
-                    </script>
-                    <!-- End AngularJS App Script -->
-                 </div>   
-            </div>
-       
+        <div id="content" ng-app="myApp">
             <div class="lesson">
                 <div class="title">Lesson 2</div>
-                <div class="description">
+                <div class="description" ng-controller="myController">
+                <a href="#openModal" class="info" >Открыть</a><span> модальное окно</span>
+                <div id="openModal" class="modalDialog">
+                   <div>
+                        <span>{{windowTitle}}</span>
+                      <a href="#close" title="Close" class="close">X</a>
+                      <modal-window title="modalWindowTitle" action-callback="modalWindowActionHandler(event, sender)">
+                        <p>
+                            Although, in a way, the Congressional powers in Article 9 made the "league of states as cohesive and strong as any similar sort of republican confederation in history",
+                            <sup id="cite_ref-11" class="reference">
+                                <a ng-click="doSomeMagic()">[11]</a>
+                            </sup>
+                            the chief problem with the new government under the Articles of Confederation was, in the words of 
+                            <a ng-click="doSomeMagic()">George Washington</a>, 
+                            "no money".
+                            <sup id="cite_ref-maier11-13_12-0" class="reference"><a ng-click="doSomeMagic()">[12]</a></sup>...  
+                        </p>
+                    </modal-window>
+                    <button ng-click="modalWindowActionHandler('click', 'Click OK in modal')">OK</button>
+                    </div>
+                </div>
                 </div>   
             </div>
+            <script>
+            var app = angular.module('myApp',[]);
+            app.controller('myController',['$scope', function($scope){
+                $scope.doSomeMagic = function(){
+                    console.log('Hello, World!');
+                };
+                $scope.windowTitle = 'Any modal window';
+            }]);
+            app.directive('modalWindow', function(){
+                var test = "Hi all!";
+                return {
+                    restrict: 'E',
+                    scope: false,
+                    transclude: true,
+                    template: '<ng-transclude></ng-transclude>',
+                    //templateUrl: 'modalContent.html',
+                    link: function(scope, element, attrs){
+                        console.log('Derective "Modal Window" defined!');
+                        console.log(attrs);
+                        scope.windowTitle = attrs.title;
+                        scope.modalWindowActionHandler = function(event, sender){
+                            console.log(event + " " + sender);
+                        };
+                    }
+                };
+            });
+            </script>
+            <!--
+            <script type="text/ng-template" id="modalContent.html">
+                        
+            </script>
+            -->
      </div>       
     </body>
 </html>
