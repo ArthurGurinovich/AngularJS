@@ -18,102 +18,109 @@
         </header>
         <div id="content">
             <div class="lesson">
-                <div class="title">Lesson 1</div>
-                <div class="description">
-                    <div class="exercise">
-                        <div class="summary"><b>Task:</b> To display the inheritance of scopes in angularjs applications do the following:</div>
-                        <ul class="items">
-                            <li>
-                                a. with ng-init create a shared value in root scope
-                            </li>
-                            <li>
-                                b. create parentCtrl1 and parentCtrl2 on the same level under root scope
-                            </li>
-                            <li>
-                                c. in the scope level of parentCtrl1 and parentCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                d. near each input place output of shared value with {{}} expression
-                            </li>
-                            <li>
-                                e. create ChildCtrl1 and ChildCtrl2 under parentCtrl1 scope
-                            </li>
-                            <li>
-                                f. in the scope level of ChildCtrl1 and ChildCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                g. near each inputs place outputs of shared value with {{}} expression
-                            </li>
-                            <li>
-                                h. improve the application so that all the {{}} show the same values after different scenarios of typing in valuse into different inputs.
-                            </li>
-                        </ul>
-                        
+                <div class="title">Lesson 3</div>
+                <div class="description" ng-app="myApp">
+                    <div ng-controller="myCtrl">
+                        <tab-controls name="tabsName">
+                            <ul class="navbar">
+                            <pane title="pane1" on-pane-activated="onFirstPaneActivated(pane)">
+                                <li><a href="#" ng-click="openTab('Tab1')">Tab1</a></li>
+
+                                <div id="Tab1" class="pane">
+                                  <h2>Loading...</h2>
+                                </div>
+                            </pane>
+                            <pane  title="pane2" on-pane-activated="onSecondPaneActivated(pane)">
+                                <li><a href="#" ng-click="openTab('Tab2')">Tab2</a></li>
+
+                                <div id="Tab2" class="pane" style="display:none">
+                                  <h2>Loading...</h2>
+                                </div>
+                            </pane>
+                            <pane  title="pane3" on-pane-activated="onThirdPaneActivated(pane)">
+                                <li><a href="#" ng-click="openTab('Tab3')">Tab3</a></li>
+
+                                <div id="Tab3" class="pane" style="display:none">
+                                  <h2>Loading...</h2>
+                                </div>
+                            </pane>
+                            </ul>
+                        </tab-controls>
                     </div>
-                    <!-- Start AngularJS App -->
-                    <div class="task-code" ng-app="MyApp" ng-init="statusVal.syncVal='Wait Sync'">
-                        <span>Level: rootScope value:</span>
-                        <span>{{ statusVal.syncVal }}</span>
+                </div>
 
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl1" >
-                            <span>Level parentCtrl1:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl1" >
-                                <span>Level ChildCtrl1:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                            </div>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl2" ">
-                                <span>Level ChildCtrl2:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                            </div>
-                        </div>
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl2">
-                            <span>Level parentCtrl2:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                        </div>
-                    </div>
-                    <!-- End AngularJS App -->
-
-                    <!-- Start AngularJS App Script -->
-                    <!-- V1 Using Events -->
-                    
                     <script>
-                        var app = angular.module('MyApp', []);
-                        app.run(['$rootScope', function($rootScope){
-                            $rootScope.statusVal = { syncVal: 'Wait Sync' };
-                        }]);
-                        app.controller('ParentCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
+                        var app = angular.module('myApp', []);
+                        app.controller('myCtrl', function($scope, $timeout){
+                            $scope.openTab =function(pane) {
+                                var i;
+                                var x = document.getElementsByClassName("pane");
+                                for (i = 0; i < x.length; i++) {
+                                   x[i].style.display = "none";  
+                                }
+                                document.getElementById(pane).style.display = "block";  
+                            };
+
+
+
+                            $scope.tabsName = 'Tabs area';
+                            $scope.pane1 = {
+                                title: 'Pane 1',
+                                description: 'Info for Pane 1'
+                            };
+                            $scope.pane2 = {
+                                title: 'Pane 2',
+                                description: 'Info for Pane 2'
+                            };
+                            $scope.pane3 = {
+                                title: 'Pane 3',
+                                description: 'Info for Pane 3'
+                            };
+                            $scope.countUp
+                            $scope.onFirstPaneActivated = function(pane){
+                                $timeout(countUp, 500);
+                            };
+                            $scope.onSecondPaneActivated = function(pane){
+                                $timeout(countUp, 500);
+                            };
+                            $scope.onThirdPaneActivated = function(pane){
+                                $timeout(countUp, 500);
+                            };
                         });
-                        app.controller('ChildCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
+                        app.directive('tabControls',function(){
+                          return {
+                            restrict: 'E',
+                            controller: 'myCtrl',
+                            scope: {
+                                tabsArea: '@name'
+                            },
+                            template: '<ng-transclude></ng-transclude>',
+                            transclude:  true,                          
+                            link: function(scope, el, attr, ctrl){
+                                console.log(ctrl);
+                            }
+                          }
                         });
-                        app.controller('ChildCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ParentCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
+                        app.directive('pane',function(){
+                          return {
+                            restrict: 'E',
+                            require: '^tabControls',
+                            scope: {
+                              pane: '@title',
+                              activeHandler: '&onPaneActivated'
+                            },
+                            template: '<ng-transclude></ng-transclude>',
+                            transclude:  true,                          
+                            link: function(scope, el, attr, ctrl){
+                                console.log(scope);
+                                console.log(scope.pane);
+
+                            }
+                          }
                         });
 
                     </script>
-                    <!-- End AngularJS App Script -->
                  </div>   
-            </div>
-       
-            <div class="lesson">
-                <div class="title">Lesson 2</div>
-                <div class="description">
-                </div>   
             </div>
      </div>       
     </body>

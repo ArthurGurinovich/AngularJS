@@ -84,3 +84,31 @@ header{
 .task-code .node-line{
     padding: 10px;
 }
+
+/* Lesson3*/
+.navbar{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden
+    color: #000;
+    background-color: #ccc;
+}
+.navbar li a {
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+}
+.navbar li {
+    padding: 10px;
+}
+
+.navbar li a:hover{
+    cursor: pointer;
+}
+
+.pane{
+    background-color: #e2e2e2;
+    padding: 20px;
+    font-size: 14px;
+}
