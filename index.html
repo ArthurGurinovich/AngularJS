@@ -20,60 +20,66 @@
             <div class="lesson">
                 <div class="title">Lesson 2</div>
                 <div class="description" ng-controller="myController">
-                <a href="#openModal" class="info" >Открыть</a><span> модальное окно</span>
-                <div id="openModal" class="modalDialog">
-                   <div>
-                        <span>{{windowTitle}}</span>
-                      <a href="#close" title="Close" class="close">X</a>
-                      <modal-window title="modalWindowTitle" action-callback="modalWindowActionHandler(event, sender)">
-                        <p>
-                            Although, in a way, the Congressional powers in Article 9 made the "league of states as cohesive and strong as any similar sort of republican confederation in history",
-                            <sup id="cite_ref-11" class="reference">
-                                <a ng-click="doSomeMagic()">[11]</a>
-                            </sup>
-                            the chief problem with the new government under the Articles of Confederation was, in the words of 
-                            <a ng-click="doSomeMagic()">George Washington</a>, 
-                            "no money".
-                            <sup id="cite_ref-maier11-13_12-0" class="reference"><a ng-click="doSomeMagic()">[12]</a></sup>...  
-                        </p>
-                    </modal-window>
-                    <button ng-click="modalWindowActionHandler('click', 'Click OK in modal')">OK</button>
+                    <a href="#" class="info" ng-click="showModal()">Открыть</a><span> модальное окно</span>
+                    <div class="modalDialog" style="display: {{ displayState }}">
+                       <div>
+                          <a href="#" title="Close" ng-click="hideModal()" class="close">X</a>
+                              <modal-window 
+                                    title="modalWindowTitle" 
+                                    action-callback="modalWindowActionHandler(event, sender)">
+                                <div> {{ header }} </div>
+                                    <p>
+                                        Although, in a way, the Congressional powers in Article 9 made the "league of states as cohesive and strong as any similar sort of republican confederation in history",
+                                        <sup id="cite_ref-11" class="reference">
+                                            <a ng-click="doSomeMagic()">[11]</a>
+                                        </sup>
+                                        the chief problem with the new government under the Articles of Confederation was, in the words of 
+                                        <a ng-click="doSomeMagic()">George Washington</a>, 
+                                        "no money".
+                                        <sup id="cite_ref-maier11-13_12-0" class="reference"><a ng-click="doSomeMagic()">[12]</a></sup>...  
+                                    </p>
+                                    <div> {{ clickHandler({ event: 'View', sender: 'Modal'}) }}</div>
+                                    <button ng-click="clickHandler({ event: 'View', sender: 'Modal'})"> Modal: OK</button>
+                                </modal-window>
+                            <button ng-click="modalWindowActionHandler('click', 'Controller')">Controller: OK</button>
+                        </div>
                     </div>
-                </div>
                 </div>   
             </div>
             <script>
             var app = angular.module('myApp',[]);
             app.controller('myController',['$scope', function($scope){
-                $scope.doSomeMagic = function(){
-                    console.log('Hello, World!');
+                $scope.modalWindowActionHandler = function(event, sender){
+                    console.info('Action: ' + event + ' from ' + sender);
                 };
-                $scope.windowTitle = 'Any modal window';
+                $scope.doSomeMagic = function(){
+                    console.info('Hello, World!');
+                };
+                $scope.modalWindowTitle = { title: 'Modal window from controller'};
+                // Modal Window state
+                $scope.displayState = 'none';
+                $scope.showModal = function(){ return $scope.displayState = 'block'; };
+                $scope.hideModal = function(){ return $scope.displayState = 'none'; };
             }]);
             app.directive('modalWindow', function(){
-                var test = "Hi all!";
                 return {
-                    restrict: 'E',
-                    scope: false,
+                    restrict: 'AE',
+                    replace: true,
+                    scope: {
+                        header: "@title",
+                        clickHandler: "&actionCallback"
+                    },
                     transclude: true,
                     template: '<ng-transclude></ng-transclude>',
-                    //templateUrl: 'modalContent.html',
+
                     link: function(scope, element, attrs){
-                        console.log('Derective "Modal Window" defined!');
-                        console.log(attrs);
-                        scope.windowTitle = attrs.title;
-                        scope.modalWindowActionHandler = function(event, sender){
-                            console.log(event + " " + sender);
-                        };
+                        console.log('Directive "Modal Window" defined!');
+                        console.log(scope.header);
+                        console.log( scope.clickHandler({ event: 'View', sender: 'Modal'}) );
                     }
                 };
             });
             </script>
-            <!--
-            <script type="text/ng-template" id="modalContent.html">
-                        
-            </script>
-            -->
      </div>       
     </body>
 </html>

@@ -119,8 +119,7 @@ header{
 }
 /*Закрытие окна*/
 .close {
-    background: #606061;
-    color: #FFFFFF;
+
     line-height: 25px;
     position: absolute;
     right: -1px;
@@ -132,4 +131,21 @@ header{
     /* -webkit-border-radius: 12px; */
     -moz-border-radius: 12px;
     border-radius: 3px;
+}
+.modalDialog a {
+    color: #e55053;
+}
+.modalDialog a:hover {
+    cursor: pointer;
+}
+button {
+    color: #FFFFFF;
+    font-size: 12px;
+    background-color: #e55053;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+}
+button:hover{
+    cursor: pointer;
 }
