@@ -145,6 +145,8 @@ button {
     padding: 10px 20px;
     border: none;
     border-radius: 3px;
+    display: block;
+    margin: 5px;
 }
 button:hover{
     cursor: pointer;
