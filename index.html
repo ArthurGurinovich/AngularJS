@@ -21,28 +21,25 @@
                 <div class="title">Lesson 3</div>
                 <div class="description" ng-app="myApp">
                     <div ng-controller="myCtrl">
-                        <tab-controls name="tabsName">
+                        <tab-controls name="{{ tabsName }}">
                             <ul class="navbar">
-                            <pane title="pane1" on-pane-activated="onFirstPaneActivated(pane)">
-                                <li><a href="#" ng-click="openTab('Tab1')">Tab1</a></li>
-
-                                <div id="Tab1" class="pane">
-                                  <h2>Loading...</h2>
-                                </div>
+                            <pane title="{{ pane1 }}" on-pane-activated="onFirstPaneActivated(pane)">
+                                    <div class="loading">
+                                        <img src="./img/spinner.gif" width="30" height="30" alt="Loading...">
+                                        <p>Loading...</p>
+                                    </div>    
                             </pane>
-                            <pane  title="pane2" on-pane-activated="onSecondPaneActivated(pane)">
-                                <li><a href="#" ng-click="openTab('Tab2')">Tab2</a></li>
-
-                                <div id="Tab2" class="pane" style="display:none">
-                                  <h2>Loading...</h2>
-                                </div>
+                            <pane  title=" {{ pane2 }}" on-pane-activated="onSecondPaneActivated(pane)">
+                                    <div class="loading">
+                                        <img src="./img/spinner.gif" width="30" height="30" alt="Loading...">
+                                        <p>Loading...</p>
+                                    </div> 
                             </pane>
-                            <pane  title="pane3" on-pane-activated="onThirdPaneActivated(pane)">
-                                <li><a href="#" ng-click="openTab('Tab3')">Tab3</a></li>
-
-                                <div id="Tab3" class="pane" style="display:none">
-                                  <h2>Loading...</h2>
-                                </div>
+                            <pane  title="{{ pane3 }}" on-pane-activated="onThirdPaneActivated(pane)">
+                                    <div class="loading">
+                                        <img src="./img/spinner.gif" width="30" height="30" alt="Loading...">
+                                        <p>Loading...</p>
+                                    </div> 
                             </pane>
                             </ul>
                         </tab-controls>
@@ -51,8 +48,9 @@
 
                     <script>
                         var app = angular.module('myApp', []);
-                        app.controller('myCtrl', function($scope, $timeout){
-                            $scope.openTab =function(pane) {
+                        app.controller('myCtrl',['$scope', function($scope, $timeout){
+
+                            $scope.openTab = function(pane) {
                                 var i;
                                 var x = document.getElementsByClassName("pane");
                                 for (i = 0; i < x.length; i++) {
@@ -65,56 +63,90 @@
 
                             $scope.tabsName = 'Tabs area';
                             $scope.pane1 = {
+                                id: 'Tab1',
                                 title: 'Pane 1',
-                                description: 'Info for Pane 1'
+                                description: 'Info for Pane 1',
+                                display: 'block',
+                                active: false
                             };
                             $scope.pane2 = {
+                                id: 'Tab2',
                                 title: 'Pane 2',
-                                description: 'Info for Pane 2'
+                                description: 'Info for Pane 2',
+                                display: 'none',
+                                active: false
                             };
                             $scope.pane3 = {
+                                id: 'Tab3',
                                 title: 'Pane 3',
-                                description: 'Info for Pane 3'
+                                description: 'Info for Pane 3',
+                                display: 'none',
+                                active: false
                             };
-                            $scope.countUp
+
+
+
+                            $scope.countUp = function(emit, where){
+                                    $scope.openTab(emit.id);
+                                 return emit.title + " " + emit.description + " " + where; 
+                            };
+
+
                             $scope.onFirstPaneActivated = function(pane){
-                                $timeout(countUp, 500);
+                                setTimeout(function(){
+                                    $scope.countUp($scope.pane1, pane)
+                                }, 200);
                             };
                             $scope.onSecondPaneActivated = function(pane){
-                                $timeout(countUp, 500);
+                                setTimeout(function(){
+                                    $scope.countUp($scope.pane2, pane)
+                                }, 200);
                             };
                             $scope.onThirdPaneActivated = function(pane){
-                                $timeout(countUp, 500);
+                                setTimeout(function(){
+                                    $scope.countUp($scope.pane3, pane)
+                                }, 200);
                             };
-                        });
+                        }]);
                         app.directive('tabControls',function(){
                           return {
                             restrict: 'E',
-                            controller: 'myCtrl',
                             scope: {
-                                tabsArea: '@name'
+                                name: '@'
                             },
-                            template: '<ng-transclude></ng-transclude>',
-                            transclude:  true,                          
-                            link: function(scope, el, attr, ctrl){
-                                console.log(ctrl);
-                            }
+                            transclude:  true, 
+                            template: '<div><h2>{{ name }}</h2><ng-transclude></ng-transclude></div>',                     
+                            link: function(scope, el, attr){
+                            },
                           }
                         });
                         app.directive('pane',function(){
                           return {
                             restrict: 'E',
-                            require: '^tabControls',
                             scope: {
-                              pane: '@title',
-                              activeHandler: '&onPaneActivated'
+                              setting: '@title',
+                              onPaneActivated: '&'
                             },
-                            template: '<ng-transclude></ng-transclude>',
+                            controller: function($scope, $element){
+                                $scope.getTitle = function(setting){
+                                    var setting = JSON.parse(setting);
+                                    return setting.title;
+                                };
+                                $scope.getId = function(setting){
+                                    var setting = JSON.parse(setting);
+                                    return setting.id;
+                                };
+                                $scope.changeState = function(setting){
+                                    var setting = JSON.parse(setting);
+                                    return setting.display;
+                                };
+                            },
+                            template: '<li><a href="#" ng-click=\'onPaneActivated({pane: true})\'>{{ getTitle(setting) }}</a></li>'+
+                            '<div id="{{getId(setting)}}" class="pane" style="display: none">'+
+                            '<ng-transclude></ng-transclude></div>',
                             transclude:  true,                          
-                            link: function(scope, el, attr, ctrl){
-                                console.log(scope);
-                                console.log(scope.pane);
-
+                            link: function (scope, element, attrs, ctrl, transclude) {
+                                
                             }
                           }
                         });
