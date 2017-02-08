@@ -22,9 +22,9 @@
                 <div class="description" ng-app="myApp">
                     <div ng-controller="contentController">                  
                         <tab-controls name="{{ tabsDesc }}">
-                                <pane pane-name="Pane1" on-pane-activated="onTabActivated(state)"></pane>
-                                <pane pane-name="Pane2" on-pane-activated="onTabActivated(state)"></pane>
-                                <pane pane-name="Pane3" on-pane-activated="onTabActivated(state)"></pane>
+                                <pane pane-name="Pane 1" on-pane-activated="handleActive(state)"></pane>
+                                <pane pane-name="Pane 2" on-pane-activated="handleActive(state)"></pane>
+                                <pane pane-name="Pane 3" on-pane-activated="handleActive(state)"></pane>
                         </tab-controls>    
                         <script>
                         var app = angular.module('myApp', []);
@@ -32,42 +32,39 @@
                             $scope.tabsDesc = 'Click on the tabs inside the tabbed menu:';
                         }]);
                         app.controller('tabsCtrl', function($scope, $element, $attrs, $timeout) {
-
                              var panes = $scope.panes = [];
+                             var countP = 0;
 
-                                $scope.contentLoad = function(){
-
-                                };
-
-                                $scope.onTabActivated = function(pane) {
-
-                                    
-                                    angular.forEach(panes, function(pane) {
-                                        pane.state = 'none';
-                                    });
-
-                                    pane.state = 'block';
-
-
+                                $scope.contentLoad = function(pane){
                                     if(pane.contentLoad != false){
-                                    
                                         $timeout(function() {
                                             pane.content = 'Content for ' + pane.title;
                                             console.log(pane.content);
                                             pane.contentLoad = true;
                                         }, 1000);
-
                                     } else{
-                                        console.log('Content loaded before');
+                                        pane.content = 'Content was loaded before';
+                                        console.log(pane.content);
                                     }
                                 };
 
-                                this.createPanes = function(pane) {
-                                    if (panes.length === 0) {
+                                $scope.onTabActivated = function(pane) {
+                                    angular.forEach(panes, function(pane) {
+                                        pane.state = 'none';
+                                        pane.used = '';
+                                    });
+                                    pane.used = 'active';
+                                    pane.state = 'block';
+                                    $scope.contentLoad(pane);   
+                                };
 
-                                        $scope.onTabActivated(pane);
-                                    }
+                                
+                                this.createPanes = function(pane) {
                                     panes.push(pane);
+                                    if(countP === 1){
+                                        $scope.onTabActivated(panes[0]);
+                                    } 
+                                    countP++;
                                 };
                         });
                         app.directive('tabControls',function(){
@@ -78,7 +75,7 @@
                                 name: '@'
                             },
                             controller: 'tabsCtrl',
-                            template: '<div class="tabbable">{{ name }}<ul class="tab"><li ng-repeat="pane in panes" class="tablinks"><a href="" ng-click="onTabActivated(pane)">{{pane.title}}</a></li></ul><ng-transclude></ng-transclude></div>',                     
+                            template: '<div class="tabbable">{{ name }}<ul class="tab"><li ng-repeat="pane in panes" class="tablinks"><a href="#" class="{{pane.used}}" ng-click="onTabActivated(pane)">{{pane.title}}</a></li></ul><ng-transclude></ng-transclude></div>',                     
                             link: function(scope, element, attrs, ctrl){
 
                             }
@@ -92,7 +89,7 @@
                             replace: true,
                             scope: {
                                 title: '@paneName',
-                                onActivated: '&onTabActivated'
+                                onPaneActivated: '&'
                             },
                             link: function(scope, element, attrs, tabsCtrl) {
                                 tabsCtrl.createPanes(scope);
@@ -104,9 +101,7 @@
                     </script>
 
                     </div>    
-                </div>
-
-                    
+                </div> 
                  </div>   
             </div>
     </body>
