@@ -18,102 +18,57 @@
         </header>
         <div id="content">
             <div class="lesson">
-                <div class="title">Lesson 1</div>
+                <div class="title">Lesson 4</div>
                 <div class="description">
-                    <div class="exercise">
-                        <div class="summary"><b>Task:</b> To display the inheritance of scopes in angularjs applications do the following:</div>
-                        <ul class="items">
-                            <li>
-                                a. with ng-init create a shared value in root scope
-                            </li>
-                            <li>
-                                b. create parentCtrl1 and parentCtrl2 on the same level under root scope
-                            </li>
-                            <li>
-                                c. in the scope level of parentCtrl1 and parentCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                d. near each input place output of shared value with {{}} expression
-                            </li>
-                            <li>
-                                e. create ChildCtrl1 and ChildCtrl2 under parentCtrl1 scope
-                            </li>
-                            <li>
-                                f. in the scope level of ChildCtrl1 and ChildCtrl2 place inputs with ng-model bound to shared value
-                            </li>
-                            <li>
-                                g. near each inputs place outputs of shared value with {{}} expression
-                            </li>
-                            <li>
-                                h. improve the application so that all the {{}} show the same values after different scenarios of typing in valuse into different inputs.
-                            </li>
-                        </ul>
-                        
-                    </div>
-                    <!-- Start AngularJS App -->
-                    <div class="task-code" ng-app="MyApp" ng-init="statusVal.syncVal='Wait Sync'">
-                        <span>Level: rootScope value:</span>
-                        <span>{{ statusVal.syncVal }}</span>
-
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl1" >
-                            <span>Level parentCtrl1:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl1" >
-                                <span>Level ChildCtrl1:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+                    <div ng-app="myApp">
+                        <div ng-controller="myController">
+                            <div class="login_form" ng-if="loginForm.state">
+                                <p>{{ loginForm.title }}</p>
+                                <input type="text" name="username" value="" ng-model="loginForm.username" placeholder="Set your name">
+                                <input type="button" name="start" value="Start chat" ng-click="startChat(loginForm.username)">
                             </div>
-
-                            <!-- Child Ctrl -->
-                            <div class="node-line" ng-controller="ChildCtrl2" ">
-                                <span>Level ChildCtrl2:</span>
-                                <input type="text" ng-model="statusVal.syncVal">
-                                <span>Result: <span>{{ statusVal.syncVal }}</span></span>
+                            <div class="chat" ng-if="!loginForm.state">
+                                <chat title="{{ loginForm.timeline }}"></chat>
+                                <form-chat></form-chat>
                             </div>
                         </div>
-                        <!-- Parent Ctrl -->
-                        <div class="node-line" ng-controller="ParentCtrl2">
-                            <span>Level parentCtrl2:</span>
-                            <input type="text" ng-model="statusVal.syncVal">
-                            <span>Result: <span>{{ statusVal.syncVal }}</span></span>
-                        </div>
                     </div>
-                    <!-- End AngularJS App -->
+                <script>
+                    var app = angular.module("myApp", []);
 
-                    <!-- Start AngularJS App Script -->
-                    <!-- V1 Using Events -->
+                    app.controller("myController", ['$scope', function($scope) {
+
+                        $scope.loginForm = {
+                            title: 'Login to start message',
+                            state: true,
+                            timeline: 'Chat timeline'
+                        };
+                        $scope.startChat = function(name){
+                            $scope.loginForm.state = false;
+                            console.log(name);
+                        };
+                    }]);
+                    app.directive('chat', function(){
+                        return {
+                            scope: {
+                                title: '@'
+                            },
+                            controller: function($scope, $element, $attrs) {
+
+                            },
+                            //require: 'ngModel',
+                            restrict: 'E',
+                            template: '<div>{{ title }}</div>',
+                            replace: true,
+                            transclude: true,
+                            link: function($scope, elem, attrs, controller) {
+                                
+                            }
+                        };
+                    });
                     
-                    <script>
-                        var app = angular.module('MyApp', []);
-                        app.run(['$rootScope', function($rootScope){
-                            $rootScope.statusVal = { syncVal: 'Wait Sync' };
-                        }]);
-                        app.controller('ParentCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ChildCtrl1', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ChildCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-                        app.controller('ParentCtrl2', function($scope){
-                            // $scope.syncVal = $scope.statusVal.syncVal;
-                        });
-
-                    </script>
-                    <!-- End AngularJS App Script -->
+                </script>
                  </div>   
-            </div>
-       
-            <div class="lesson">
-                <div class="title">Lesson 2</div>
-                <div class="description">
-                </div>   
             </div>
      </div>       
     </body>
