@@ -90,7 +90,7 @@ header{
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden
+    overflow: hidden;
     color: #000;
     background-color: #ccc;
 }
@@ -149,7 +149,6 @@ ul.tab li a:hover {
 /* Create an active/current tablink class */
 .active {
     background-color: #cccccc;
-    border-bottom: 3px solid #E55058;
 }
 
 /* Style the tab content */

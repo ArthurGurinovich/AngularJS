@@ -21,88 +21,92 @@
                 <div class="title">Lesson 3</div>
                 <div class="description" ng-app="myApp">
                     <div ng-controller="contentController">                  
-                        <tab-controls name="{{ tabsDesc }}">
-                                <pane pane-name="Pane 1" on-pane-activated="handleActive(state)"></pane>
-                                <pane pane-name="Pane 2" on-pane-activated="handleActive(state)"></pane>
-                                <pane pane-name="Pane 3" on-pane-activated="handleActive(state)"></pane>
+                        <tab-controls name="{{ title }}" description="{{ description }}">
+                                <pane pane-name="Pane 1" on-pane-activated="handleActive(tab, state)"></pane>
+                                <pane pane-name="Pane 2" on-pane-activated="handleActive(tab, state)"></pane>
+                                <pane pane-name="Pane 3" on-pane-activated="handleActive(tab, state)"></pane>
+                                <pane pane-name="Pane 4" on-pane-activated="handleActive(tab, state)"></pane>
                         </tab-controls>    
                         <script>
-                        var app = angular.module('myApp', []);
-                        app.controller('contentController',['$scope', function($scope){
-                            $scope.tabsDesc = 'Click on the tabs inside the tabbed menu:';
-                        }]);
-                        app.controller('tabsCtrl', function($scope, $element, $attrs, $timeout) {
-                             var panes = $scope.panes = [];
-                             var countP = 0;
-
-                                $scope.contentLoad = function(pane){
-                                    if(pane.contentLoad != false){
-                                        $timeout(function() {
-                                            pane.content = 'Content for ' + pane.title;
-                                            console.log(pane.content);
-                                            pane.contentLoad = true;
-                                        }, 1000);
-                                    } else{
-                                        pane.content = 'Content was loaded before';
-                                        console.log(pane.content);
+                            var app = angular.module('myApp', []);
+                            app.controller('contentController',['$scope', function($scope){
+                                $scope.title = 'Click on any tab to change description:';
+                                $scope.description = 'Tab state...';
+                                $scope.handleActive = function(tab, state){
+                                    if(state === true){
+                                        $scope.description = "Tab " + tab + " was activated at first. Data was loaded too.";
                                     }
                                 };
+                            }]);
+                            app.controller('tabsCtrl', function($scope, $element, $attrs, $timeout) {
+                                var panes = $scope.panes = [];
+                                var countP = 0;
+                                    $scope.getContent = function(pane){
+                                        return pane.content = 'Content for ' + pane.title;
+                                    };
+                                    $scope.contentLoad = function(pane){
+                                        if((pane.contentLoad === false) || (pane.contentLoad === undefined)){
+                                            $timeout(function(){
+                                                $scope.getContent(pane);
+                                                pane.contentLoad = true;
+                                            }, 1000);
+                                        } else{
+                                            console.log('Content was loaded before');
+                                        }
+                                    };
+                                    $scope.onTabActivated = function(pane) {
+                                        angular.forEach(panes, function(pane) {
+                                            pane.state = 'none';
+                                            pane.used = '';
+                                        });
+                                        pane.used = 'active';
+                                        pane.state = 'block';
+                                        $scope.contentLoad(pane);   
+                                    };
+                                    this.createPanes = function(pane) {
+                                        panes.push(pane);
+                                        if(countP === 1){
+                                            $scope.onTabActivated(panes[0]);
+                                        } 
+                                        countP++;
+                                    };
+                            });
+                            app.directive('tabControls',function(){
+                                return {
+                                    restrict: 'E',
+                                    transclude:  true,
+                                    scope: {
+                                        name: '@',
+                                        description: '@'
+                                    },
+                                    controller: 'tabsCtrl',
+                                    template: '<div class="tabbable">{{ name }}<p>{{ description }}</p><ul class="tab"><li ng-repeat="pane in panes" class="tablinks"><a href="#" class="{{pane.used}}" ng-click="onTabActivated(pane)">{{pane.title}}</a></li></ul><ng-transclude></ng-transclude></div>',                     
+                                    link: function(scope, element, attrs, ctrl){
 
-                                $scope.onTabActivated = function(pane) {
-                                    angular.forEach(panes, function(pane) {
-                                        pane.state = 'none';
-                                        pane.used = '';
-                                    });
-                                    pane.used = 'active';
-                                    pane.state = 'block';
-                                    $scope.contentLoad(pane);   
-                                };
-
-                                
-                                this.createPanes = function(pane) {
-                                    panes.push(pane);
-                                    if(countP === 1){
-                                        $scope.onTabActivated(panes[0]);
-                                    } 
-                                    countP++;
-                                };
-                        });
-                        app.directive('tabControls',function(){
-                          return {
-                            restrict: 'E',
-                            transclude:  true,
-                            scope: {
-                                name: '@'
-                            },
-                            controller: 'tabsCtrl',
-                            template: '<div class="tabbable">{{ name }}<ul class="tab"><li ng-repeat="pane in panes" class="tablinks"><a href="#" class="{{pane.used}}" ng-click="onTabActivated(pane)">{{pane.title}}</a></li></ul><ng-transclude></ng-transclude></div>',                     
-                            link: function(scope, element, attrs, ctrl){
-
-                            }
-                          }
-                        });
-                        app.directive('pane',function(){
-                          return {
-                            require: '^^tabControls',
-                            restrict: 'E',
-                            transclude:  false,
-                            replace: true,
-                            scope: {
-                                title: '@paneName',
-                                onPaneActivated: '&'
-                            },
-                            link: function(scope, element, attrs, tabsCtrl) {
-                                tabsCtrl.createPanes(scope);
-                            },
-                            template:'<div class="tabcontent" style="display: {{ state }}"><h4>{{ content }}</h4>'+
-                            '<div ng-if="!contentLoad" class="loading"><img src="./img/spinner.gif" width="30" height="30" alt="Loading..."><p>Loading...</p></div></div>'
-                          }
-                        });
-                    </script>
-
+                                    }
+                                }
+                            });
+                            app.directive('pane',function(){
+                                return {
+                                    require: '^^tabControls',
+                                    restrict: 'E',
+                                    transclude:  false,
+                                    replace: true,
+                                    scope: {
+                                        title: '@paneName',
+                                        onPaneActivated: '&'
+                                    },
+                                    link: function(scope, element, attrs, tabsCtrl){
+                                        tabsCtrl.createPanes(scope);
+                                    },
+                                    template:'<div class="tabcontent" style="display: {{ state }}"><h4>{{ content }} {{ onPaneActivated({tab: title, state: contentLoad})}}</h4>' +
+                                            '<div ng-if="!contentLoad" class="loading"><img src="./img/spinner.gif" width="30" height="30" alt="Loading..."><p>Loading...</p></div></div>'
+                                }
+                            });
+                        </script>
                     </div>    
                 </div> 
-                 </div>   
-            </div>
+            </div>   
+        </div>
     </body>
 </html>
