@@ -24,12 +24,12 @@
                         <div ng-controller="myController">
                             <div class="login_form" ng-if="loginForm.state">
                                 <p>{{ loginForm.title }}</p>
-                                <input type="text" name="username" value="" ng-model="loginForm.username" placeholder="Set your name">
+                                <input type="text" name="username" value="" ng-model="loginForm.username" placeholder="{{ loginForm.title }}">
                                 <input type="button" name="start" value="Start chat" ng-click="startChat(loginForm.username)">
                             </div>
                             <div class="chat" ng-if="!loginForm.state">
                                 <chat title="{{ loginForm.timeline }}"></chat>
-                                <form-chat></form-chat>
+                                <form-chat username="{{ loginForm.username }}"></form-chat>
                             </div>
                         </div>
                     </div>
@@ -39,9 +39,9 @@
                     app.controller("myController", ['$scope', function($scope) {
 
                         $scope.loginForm = {
-                            title: 'Login to start message',
+                            title: 'Введите ваше имя для начала общения',
                             state: true,
-                            timeline: 'Chat timeline'
+                            timeline: 'Прямой эфир'
                         };
                         $scope.startChat = function(name){
                             $scope.loginForm.state = false;
@@ -58,7 +58,25 @@
                             },
                             //require: 'ngModel',
                             restrict: 'E',
-                            template: '<div>{{ title }}</div>',
+                            template: '<div class="chat_title"><div class="chat_rec"></div>{{ title }}</div>',
+                            replace: true,
+                            transclude: true,
+                            link: function($scope, elem, attrs, controller) {
+                                
+                            }
+                        };
+                    });
+                    app.directive('formСhat', function(){
+                        return {
+                            scope: {
+                                username: '@'
+                            },
+                            controller: function($scope, $element, $attrs) {
+
+                            },
+                            //require: 'ngModel',
+                            restrict: 'E',
+                            template: '<div class="chat_title">{{ username }}</div>',
                             replace: true,
                             transclude: true,
                             link: function($scope, elem, attrs, controller) {
