@@ -8,6 +8,9 @@
         <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon">
         <script src="./js/base/angular.min.1.5.js"></script>
         <link rel="stylesheet" type="text/css" href="./css/style.css">
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.3/jquery.mCustomScrollbar.concat.min.js"></script>
     </head>
     <body>
         <header class="top-header">
@@ -24,70 +27,171 @@
                         <div ng-controller="myController">
                             <div class="login_form" ng-if="loginForm.state">
                                 <p>{{ loginForm.title }}</p>
-                                <input type="text" name="username" value="" ng-model="loginForm.username" placeholder="{{ loginForm.title }}">
-                                <input type="button" name="start" value="Start chat" ng-click="startChat(loginForm.username)">
+                                <input type="text" name="username" value="" ng-model="loginForm.user.name" placeholder="Введите Ваше имя">
+                                <input type="text" name="position" value="" ng-model="loginForm.user.position" placeholder="Ваша профессия">
+                                <input type="button" name="start" value="Войти" ng-click="startChat()">
                             </div>
-                            <div class="chat" ng-if="!loginForm.state">
-                                <chat title="{{ loginForm.timeline }}"></chat>
-                                <form-chat username="{{ loginForm.username }}"></form-chat>
+                            <div ng-if="!loginForm.state">
+                                <chat setting="{{ loginForm }}">
+                                    <messages>
+                                    </messages>
+                                    <form-chat></form-chat>
+                                </chat>
                             </div>
                         </div>
                     </div>
-                <script>
-                    var app = angular.module("myApp", []);
+                    <script>
+                        var app = angular.module("myApp", []);
 
-                    app.controller("myController", ['$scope', function($scope) {
+                        app.controller("myController", ['$scope', '$rootScope', function($rootScope, $scope) {
+                            $scope.loginForm = {
+                                title: 'Введите ваше имя для начала консультации',
+                                state: true,
+                                user: {
+                                    name: '',
+                                    position: '' 
+                                }
+                            };
 
-                        $scope.loginForm = {
-                            title: 'Введите ваше имя для начала общения',
-                            state: true,
-                            timeline: 'Прямой эфир'
-                        };
-                        $scope.startChat = function(name){
-                            $scope.loginForm.state = false;
-                            console.log(name);
-                        };
-                    }]);
-                    app.directive('chat', function(){
-                        return {
-                            scope: {
-                                title: '@'
-                            },
-                            controller: function($scope, $element, $attrs) {
+                            $scope.startChat = function(){
+                                $scope.loginForm.state = false;
+                            };
 
-                            },
-                            //require: 'ngModel',
-                            restrict: 'E',
-                            template: '<div class="chat_title"><div class="chat_rec"></div>{{ title }}</div>',
-                            replace: true,
-                            transclude: true,
-                            link: function($scope, elem, attrs, controller) {
-                                
+                            
+                        }]);
+                        app.controller('chatCtrl', function($scope, $element, $attrs, $timeout) {
+                            $scope.initUser = function(setting, param){
+                                var init = JSON.parse(setting);
+                                    if(param === 'name'){
+                                        return init.user.name;
+                                }else if (param === 'position'){
+                                        return init.user.position;
+                                }else{
+                                        return 'User info';
+                                    }
+                            };
+                        });
+                        app.directive('chat', function(){
+                            return {
+                                scope: {
+                                    setting: '@'
+                                },
+                                controller: 'chatCtrl',
+                                restrict: 'E',
+                                //templateUrl: './templates/chat.html',
+                                template: '<div class="chat">' +
+                                            '<div class="chat-title">' +
+                                                '<h1>{{ initUser(setting, "name") }}</h1>' +
+                                                '<h2>{{  initUser(setting, "position") }}</h2>' +
+                                                '<figure class="avatar">' +
+                                                    '<img src="./img/user.png"/>' +
+                                                '</figure>' +
+                                            '</div>' +
+                                            '<ng-transclude></ng-transclude>' +
+                                        '</div>',
+                                //replace: true,
+                                transclude: true,
+                                link: function($scope, elem, attrs, controller) {
+                                    
+                                }
+                            };
+                        });
+                        app.controller('messagesCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
+                            var messages = $scope.messages = [];
+                            var messagesC = $scope.messagesC = [];
+                            $scope.counter = 0;
+                            consultation = [
+                                'Hi! Nice to meet you',
+                                'How are you?',
+                                'Not too bad, thanks',
+                                'What do you do?',
+                                'That\'s awesome',
+                                'I think you\'re a nice person',
+                                'Why do you think that?',
+                                'Can you explain?',
+                                'Anyway I\'ve gotta go now',
+                                'It was a pleasure chat with you',
+                                'Bye'
+                            ];
+                            $scope.$on('sentMessage', function (event, data) {
+                                if((data !== '') || (data !== undefined)){
+                                $scope.getMessageC($scope.counter);
+                                $scope.counter++;
+                                    var message = {
+                                        message: data,
+                                        time: new Date(),
+                                        user: true
+                                    };
+                                    messages.push(message);
+                                }else{
+                                    console.info("Wrong message value!");
+                                }
+                            });
+                            $scope.getMessageC = function(counter){
+                                for(var i=0; i <= consultation.length; i++){
+                                    if(i === counter){
+                                    var message = {
+                                        message: consultation[i],
+                                        time: new Date(),
+                                        user: false
+                                    };
+                                        $timeout(function(){
+                                            messages.push(message);
+                                        }, 2000);
+                                    }
+                                }
                             }
-                        };
-                    });
-                    app.directive('formСhat', function(){
-                        return {
-                            scope: {
-                                username: '@'
-                            },
-                            controller: function($scope, $element, $attrs) {
+                        });
+                        app.directive('messages', function(){
+                            return {
+                                scope: {
+                                    messages: '@',
+                                    sendMessage: '&'
+                                },
+                                controller: 'messagesCtrl',
+                                restrict: 'E',
+                                // templateUrl: './templates/messages.html',
+                                template: '<div class="messages">'+
+                                            '<div class="messages-content">'+
+                                                '<div class="message2" ng-repeat="x in messages"><div ng-show="!x.user" class="message message-other">{{ x.message }}<div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div><div ng-show="x.user" class="message message-personal">{{ x.message }} <div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div></div>'+
+                                                '<div class="message-other"></div>'+
+                                            '</div>'+
+                                        '</div>',
+                                //replace: true,
+                                transclude: true,
+                                link: function($scope, elem, attrs, controller) {
+                                    
+                                }
+                            };
+                        });
+                        app.controller('formChatCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
+                            var messages = $scope.messages = [];
+                            $scope.addMessage = function(message){
+                                $rootScope.$broadcast('sentMessage', message);
+                                $scope.message.text = '';
+                            };
+                        });
+                        app.directive('formChat', function(){
+                            return {
+                                scope: {
+                                },
+                                controller: 'formChatCtrl',
+                                restrict: 'E',
+                                // templateUrl: './templates/form-chat.html',
+                                template: '<div class="message-box">'+
+                                                '<textarea type="text" ng-model="message.text" class="message-input" placeholder="Введите сообщение..."></textarea>'+
+                                                '<button type="submit" class="message-submit" ng-click="addMessage(message.text)">Отправить</button>'+
+                                            '</div>',
+                                replace: true,
+                                transclude: true,
+                                link: function(scope, elem, attrs, controller) {
 
-                            },
-                            //require: 'ngModel',
-                            restrict: 'E',
-                            template: '<div class="chat_title">{{ username }}</div>',
-                            replace: true,
-                            transclude: true,
-                            link: function($scope, elem, attrs, controller) {
-                                
-                            }
-                        };
-                    });
-                    
-                </script>
-                 </div>   
+                                }
+                            };
+                        });
+                    </script>
+                </div>   
             </div>
-     </div>       
+        </div> 
     </body>
 </html>
