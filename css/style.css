@@ -116,7 +116,8 @@ header{
 
 .login_form input[type=button]{
     border: none;
-    background: #e55053;
+    background: -webkit-linear-gradient(330deg, #e55053, #872557);
+    background: linear-gradient(120deg, #e55053, #872557);
     color: #fff;
     padding: 7px 20px;
     font-size: 14px;
@@ -365,7 +366,7 @@ Message Box
     outline: none !important;
     resize: none;
     color: rgb(255, 255, 255);
-    font-size: 14px;
+    font-size: 12px;
     height: 90px;
     margin: 0;
     padding-right: 20px;
@@ -377,13 +378,13 @@ Message Box
 .message-box .message-submit {
     color: #fff;
     border: none;
-    background: #e55053;
-    font-size: 14px;
+    background: -webkit-linear-gradient(330deg, #e55053, #872557);
+    background: linear-gradient(120deg, #e55053, #872557);
+    font-size: 12px;
     padding: 7px 20px;
     border-radius: 3px;
     outline: none;
 }
 .message-box .message-submit:hover {
-  background: #e55053;
   cursor: pointer;
 }
