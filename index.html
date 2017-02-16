@@ -46,23 +46,30 @@
                                 state: true,
                                 user: {
                                     name: '',
-                                    position: '' 
+                                    position: '',
+                                    countMessage: 0 
                                 }
                             };
 
                             $scope.startChat = function(){
                                 $scope.loginForm.state = false;
                             };
-
+                            $scope.$on('logMessageCount', function (event, data) {
+                                $scope.loginForm.user.countMessage = data;
+                            });
                             
                         }]);
                         app.controller('chatCtrl', function($scope, $element, $attrs, $timeout) {
+
+                            
                             $scope.initUser = function(setting, param){
                                 var init = JSON.parse(setting);
                                     if(param === 'name'){
                                         return init.user.name;
                                 }else if (param === 'position'){
                                         return init.user.position;
+                                }else if (param === 'countMessage'){
+                                        return init.user.countMessage;
                                 }else{
                                         return 'User info';
                                     }
@@ -81,7 +88,7 @@
                                                 '<h1>{{ initUser(setting, "name") }}</h1>' +
                                                 '<h2>{{  initUser(setting, "position") }}</h2>' +
                                                 '<figure class="avatar">' +
-                                                    '<img src="./img/user.png"/>' +
+                                                    '<img src="./img/user.png"/><i class="counter">{{  initUser(setting, "countMessage") }}</i>' +
                                                 '</figure>' +
                                             '</div>' +
                                             '<ng-transclude></ng-transclude>' +
@@ -95,7 +102,6 @@
                         });
                         app.controller('messagesCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
                             var messages = $scope.messages = [];
-                            var messagesC = $scope.messagesC = [];
                             $scope.counter = 0;
                             consultation = [
                                 'Hi! Nice to meet you',
@@ -163,8 +169,11 @@
                         });
                         app.controller('formChatCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
                             var messages = $scope.messages = [];
+                            var counter = 0;
                             $scope.addMessage = function(message){
+                                counter++;
                                 $rootScope.$broadcast('sentMessage', message);
+                                $scope.$emit('logMessageCount', counter);
                                 $scope.message.text = '';
                             };
                         });
