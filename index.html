@@ -38,55 +38,82 @@
                         </div>
                     </div>
                     <script>
-                        var app = angular.module("myApp", []);                        
-                        //  Init Service to Get Messages
-                        app.service('getMessage', function() {
-                          var message = {
-                                text: '',
-                                author: '',
-                                time: ''
-                          };
-                          this.getNewMessage = function() {
-                            return message;
-                          };
-                        });
-
-                        app.config(function(messagesProvider) {
-                          messagesProvider.setMesssage('No messages');
-                        });
-                        //  Init Service to Send Messages
-                        app.service('sendMessage', function() {
-                          var message = {
-                                text: '',
-                                author: '',
-                                time: ''
-                          };
-                          this.sendNewMessage = function() {
-                            return message;
-                          };
-                        });
-
-                        //  Init Provider
-                        app.provider('messages', function() {
-                          var messages = [];
+                        var app = angular.module("myApp", []);
+                        app.config(function(consultProvider) {
+                            var consultation = [
+                                'Hi! Nice to meet you',
+                                'How are you?',
+                                'Not too bad, thanks',
+                                'What do you do?',
+                                'That\'s awesome',
+                                'I think you\'re a nice person',
+                                'Why do you think that?',
+                                'Can you explain?',
+                                'Anyway I\'ve gotta go now',
+                                'It was a pleasure chat with you',
+                                'Bye'
+                            ];
+                            consultProvider.setAnswers(consultation);
+                        });   
+                        app.provider('consult', function() {
+                          var answers = ['Answer1', 'Answer2'];
                           return {
-                            setMesssage: function(newMessage) {
-                              messages.push(newMessage);
+                            setAnswers: function(data) {
+                              answers = data;
                             },
                             $get: function() {
-                              function getMesssages() {
-                                return messages;
+                              function getAnswers() {
+                                return answers;
                               }
                               return {
-                                status: "New message",
-                                getMessages: getMessages
+                                variable: "Test",
+                                getAnswers: getAnswers
                               };
                             }
                           };
-                        });
-
+                        });                     
                         // Init Main Controller
-                        app.controller("myController", ['$scope', '$rootScope', function($rootScope, $scope) {
+                        app.service('myMessages',['consult','$timeout', function(consult, $timeout){
+                            var self = this;
+                            this.messages = [];
+                            this.counter = 0;
+                            this.addMessage = function(text){
+                                if((text !== '') || (text !== undefined)){
+                                    self.counter++;
+                                    var data = {
+                                            message: text,
+                                            time: new Date(),
+                                            client: true,
+                                            id: self.counter
+                                        };
+                                    self.messages.push(data);
+                                    self.getConsult();
+                                    console.log(self.messages);
+                                }else{
+                                    console.info("Wrong message value!");
+                                }
+                            };
+                            this.sendMessage = function(){
+                                return self.messages.length;
+                            };
+                            this.getConsult = function(){
+                                self.counter++;
+                                this.answers = consult.getAnswers();
+                                var data = {
+                                        message: this.answers[(self.counter-2)],
+                                        time: new Date(),
+                                        client: false,
+                                        id: self.counter
+                                };
+                                $timeout(function(){
+                                    self.messages.push(data)   
+                                }, 1500);  
+                            };
+                            this.getHistory = function(){
+                                return self.messages.length;
+                            };
+                        }]);
+                        app.controller("myController", ['$scope','myMessages', function($scope, myMessages) {
                             $scope.loginForm = {
                                 title: 'Введите ваше имя для начала консультации',
                                 state: true,
@@ -100,23 +127,24 @@
                             $scope.startChat = function(){
                                 $scope.loginForm.state = false;
                             };
-                            $scope.logMessageCount = function (data) {
-                                $scope.loginForm.user.countMessage = data;
-                            };
-                            
+                            $scope.loginForm.user.countMessage = myMessages.getHistory();
                         }]);
-                        app.controller('chatCtrl', function($scope, $element, $attrs, $timeout) {
+                        app.controller('chatCtrl', function($scope, $element, $attrs) {
                             $scope.initUser = function(setting, param){
                                 var init = JSON.parse(setting);
-                                    if(param === 'name'){
-                                        return init.user.name;
-                                }else if (param === 'position'){
-                                        return init.user.position;
-                                }else if (param === 'countMessage'){
-                                        return init.user.countMessage;
-                                }else{
-                                        return 'User info';
-                                    }
+                                switch (param) {
+                                  case 'name':
+                                    return init.user.name;
+                                    break;
+                                  case 'position':
+                                    return init.user.position;
+                                    break;
+                                  case 'countMessage':
+                                    return init.user.countMessage;
+                                    break;
+                                  default:
+                                    return 'User info';
+                                }
                             };
                         });
                         app.directive('chat', function(){
@@ -126,7 +154,6 @@
                                 },
                                 controller: 'chatCtrl',
                                 restrict: 'E',
-                                //templateUrl: './templates/chat.html',
                                 template: '<div class="chat">' +
                                             '<div class="chat-title">' +
                                                 '<h1>{{ initUser(setting, "name") }}</h1>' +
@@ -137,104 +164,48 @@
                                             '</div>' +
                                             '<ng-transclude></ng-transclude>' +
                                         '</div>',
-                                //replace: true,
-                                transclude: true,
-                                link: function($scope, elem, attrs, controller) {
-                                    
-                                }
+                                transclude: true
                             };
                         });
-                        app.controller('messagesCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
+                        app.controller('messagesCtrl', function($rootScope, $scope, $element, $attrs, $timeout, myMessages) {
                             var messages = $scope.messages = [];
-                            $scope.counter = 0;
-                            consultation = [
-                                'Hi! Nice to meet you',
-                                'How are you?',
-                                'Not too bad, thanks',
-                                'What do you do?',
-                                'That\'s awesome',
-                                'I think you\'re a nice person',
-                                'Why do you think that?',
-                                'Can you explain?',
-                                'Anyway I\'ve gotta go now',
-                                'It was a pleasure chat with you',
-                                'Bye'
-                            ];
-                            $scope.sentMessage = function (data) {
-                                if((data !== '') || (data !== undefined)){
-                                $scope.getMessageC($scope.counter);
-                                $scope.counter++;
-                                    var message = {
-                                        message: data,
-                                        time: new Date(),
-                                        user: true
-                                    };
-                                    messages.push(message);
-                                }else{
-                                    console.info("Wrong message value!");
-                                }
-                            };
-                            $scope.getMessageC = function(counter){
-                                for(var i=0; i <= consultation.length; i++){
-                                    if(i === counter){
-                                    var message = {
-                                        message: consultation[i],
-                                        time: new Date(),
-                                        user: false
-                                    };
-                                        $timeout(function(){
-                                            messages.push(message);
-                                        }, 2000);
-                                    }
-                                }
-                            }
+                            $scope.messages = myMessages.messages;
                         });
                         app.directive('messages', function(){
                             return {
                                 scope: {
                                     messages: '@',
-                                    sendMessage: '&'
                                 },
                                 controller: 'messagesCtrl',
                                 restrict: 'E',
-                                // templateUrl: './templates/messages.html',
                                 template: '<div class="messages">'+
                                             '<div class="messages-content">'+
-                                                '<div class="message2" ng-repeat="x in messages"><div ng-show="!x.user" class="message message-other">{{ x.message }}<div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div><div ng-show="x.user" class="message message-personal">{{ x.message }} <div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div></div>'+
+                                                '<div class="message2" ng-repeat="x in messages"><div ng-show="!x.client" class="message message-other">{{ x.message }}<div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div><div ng-show="x.client" class="message message-personal">{{ x.message }} <div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div></div>'+
                                                 '<div class="message-other"></div>'+
                                             '</div>'+
                                         '</div>',
-                                //replace: true,
-                                transclude: true,
-                                link: function($scope, elem, attrs, controller) {
-                                    
-                                }
+                                transclude: true
                             };
                         });
-                        app.controller('formChatCtrl', function($rootScope, $scope, $element, $attrs, $timeout) {
-                            var messages = $scope.messages = [];
-                            var counter = 0;
-                            $scope.addMessage = function(message){
-                                counter++;
+                        app.controller('formChatCtrl', function($rootScope, $scope, $element, $attrs, myMessages) {
+                            $scope.addMessage = function(data){
                                 $scope.message.text = '';
+                                myMessages.addMessage(data);
                             };
                         });
                         app.directive('formChat', function(){
                             return {
                                 scope: {
+
                                 },
                                 controller: 'formChatCtrl',
                                 restrict: 'E',
-                                // templateUrl: './templates/form-chat.html',
                                 template: '<div class="message-box">'+
                                                 '<textarea type="text" ng-model="message.text" class="message-input" placeholder="Введите сообщение..."></textarea>'+
                                                 '<button type="submit" class="message-submit" ng-click="addMessage(message.text)">Отправить</button>'+
                                             '</div>',
                                 replace: true,
                                 transclude: true,
-                                link: function(scope, elem, attrs, controller) {
-
-                                }
                             };
                         });
                     </script>
