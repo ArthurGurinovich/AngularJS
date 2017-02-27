@@ -77,7 +77,7 @@
                             var self = this;
                             this.messages = [];
                             this.counter = 0;
-                            this.addMessage = function(text){
+                            this.getMessage = function(text){
                                 if((text !== '') || (text !== undefined)){
                                     self.counter++;
                                     var data = {
@@ -88,7 +88,6 @@
                                         };
                                     self.messages.push(data);
                                     self.getConsult();
-                                    console.log(self.messages);
                                 }else{
                                     console.info("Wrong message value!");
                                 }
@@ -107,10 +106,7 @@
                                 };
                                 $timeout(function(){
                                     self.messages.push(data)   
-                                }, 1500);  
-                            };
-                            this.getHistory = function(){
-                                return self.messages.length;
+                                }, 1500);
                             };
                         }]);
                         app.controller("myController", ['$scope','myMessages', function($scope, myMessages) {
@@ -119,15 +115,13 @@
                                 state: true,
                                 user: {
                                     name: '',
-                                    position: '',
-                                    countMessage: 0 
+                                    position: ''
                                 }
                             };
-
                             $scope.startChat = function(){
                                 $scope.loginForm.state = false;
                             };
-                            $scope.loginForm.user.countMessage = myMessages.getHistory();
+
                         }]);
                         app.controller('chatCtrl', function($scope, $element, $attrs) {
                             $scope.initUser = function(setting, param){
@@ -138,9 +132,6 @@
                                     break;
                                   case 'position':
                                     return init.user.position;
-                                    break;
-                                  case 'countMessage':
-                                    return init.user.countMessage;
                                     break;
                                   default:
                                     return 'User info';
@@ -159,7 +150,7 @@
                                                 '<h1>{{ initUser(setting, "name") }}</h1>' +
                                                 '<h2>{{  initUser(setting, "position") }}</h2>' +
                                                 '<figure class="avatar">' +
-                                                    '<img src="./img/user.png"/><i class="counter">{{  initUser(setting, "countMessage") }}</i>' +
+                                                    '<img src="./img/user.png"/>' +
                                                 '</figure>' +
                                             '</div>' +
                                             '<ng-transclude></ng-transclude>' +
@@ -180,7 +171,7 @@
                                 restrict: 'E',
                                 template: '<div class="messages">'+
                                             '<div class="messages-content">'+
-                                                '<div class="message2" ng-repeat="x in messages"><div ng-show="!x.client" class="message message-other">{{ x.message }}<div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div><div ng-show="x.client" class="message message-personal">{{ x.message }} <div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div></div>'+
+                                                '<div class="message2" ng-repeat="x in messages"><div ng-show="!x.client" class="message message-other">{{ x.message }}<div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div><div ng-show="x.client" class="message message-personal">You: {{ x.message }} <div class="timestamp">{{ x.time | date:\'h:mm\'}}</div></div></div>'+
                                                 '<div class="message-other"></div>'+
                                             '</div>'+
                                         '</div>',
@@ -190,7 +181,7 @@
                         app.controller('formChatCtrl', function($rootScope, $scope, $element, $attrs, myMessages) {
                             $scope.addMessage = function(data){
                                 $scope.message.text = '';
-                                myMessages.addMessage(data);
+                                myMessages.getMessage(data);
                             };
                         });
                         app.directive('formChat', function(){
