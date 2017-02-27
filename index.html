@@ -18,17 +18,19 @@
         </header>
         <div id="content">
             <div class="lesson">
-                <div class="title">Lesson 6 - Digest cycle </div>
+                <div class="title">Lesson 7 - Implement widget with jquery </div>
                 <div class="description">
                     <div ng-app="myApp">
                         <div ng-controller="myController">
+
                         </div>
                     </div>
                     <script>
                         var app = angular.module("myApp", []);
-                        
-                        app.controller("myController", ['$scope', function($scope) {
+                        app.controller("myController", ['$scope', function($scope, $timeout) {
+                            $timeout(function(){
 
+                            },1000);
                         }]);
                     </script>
                 </div>   
